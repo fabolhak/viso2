@@ -11,7 +11,7 @@
 
 #include <arm_neon.h>
 
-#if defined(__MM_MALLOC_H)
+//#if defined(__MM_MALLOC_H)
 // copied from mm_malloc.h {
 #include <stdlib.h>
 
@@ -43,7 +43,7 @@ _mm_free (void * ptr)
     free (ptr);
 }
 // } copied from mm_malloc.h
-#endif
+//#endif
 
 
 typedef int16x8_t __m128i;
