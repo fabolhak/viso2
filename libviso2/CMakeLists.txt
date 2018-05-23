@@ -3,7 +3,7 @@ project(libviso2)
 
 find_package(catkin REQUIRED )
 
-option(ARM_CROSS_COMPILATION "ARM Cross Compilation" OFF)
+option(ARM_CROSS_COMPILATION "ARM Cross Compilation" ON)
 
 if(ARM_CROSS_COMPILATION)
   SET(CMAKE_SYSTEM_PROCESSOR arm)
