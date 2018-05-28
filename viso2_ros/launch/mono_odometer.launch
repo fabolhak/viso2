@@ -1,0 +1,76 @@
+<launch>
+
+<!-- image topic name-->
+<arg name="topic_name" default="/image"/>
+
+<!-- name of the world-fixed frame where the odometer lives -->
+<arg name="odom_frame_id" default="odom" />
+
+<!-- name of the moving frame whose pose the odometer should report -->
+<arg name="base_link_frame_id" default="base_link" />
+
+<!-- if true, the odometer publishes tf's -->
+<arg name="publish_tf" default="true" />
+
+<!-- were to output messages [log|screen] -->
+<arg name="output" default="screen" />
+
+<!-- camera height and pitch (see below) -->
+<arg name="camera_height" default="0.0" />
+<arg name="camera_pitch" default="0.0" />
+
+
+<!-- stereo odometer -->
+<node pkg="viso2_ros" type="stereo_odometer" name="stereo_odometer" output="$(arg output)">
+    <!-- ROS PARAMETER (description above) -->
+    <remap from="image"  to="$(arg topic_name)"/>
+    <param name="odom_frame_id"      type="str"  value="$(arg odom_frame_id)" />
+    <param name="base_link_frame_id" type="str"  value="$(arg base_link_frame_id)" />
+    <param name="publish_tf"         type="bool" value="$(arg publish_tf)" />
+
+    <!-- BUCKETING PARAMTERS -->
+    <!-- maximum number of features per bucket -->
+    <param name="max_features" type="int"  value="2" />
+    <!-- width of the bucket -->
+    <param name="bucket_width" type="double"  value="50.0" />
+    <!-- height of the bucket -->
+    <param name="bucket_height" type="double"  value="50.0" />
+
+    <!-- MATCHER PARAMETERS -->
+    <!-- minimum distance between maxima in pixels for non-maxima-suppression -->
+    <param name="nms_n" type="int" value="3" />
+    <!-- interest point peakiness threshold -->
+    <param name="nms_tau" type="int" value="50" />
+    <!-- matching width/height (affects efficiency only) -->
+    <param name="match_binsize" type="int" value="50" />
+    <!-- matching radius (du/dv in pixels) -->
+    <param name="match_radius" type="int" value="200" />
+    <!-- dv tolerance for stereo matches (in pixels) -->
+    <param name="match_disp_tolerance" type="int" value="2" />
+    <!-- disparity tolerance for outlier removal (in pixels) -->
+    <param name="outlier_disp_tolerance" type="int" value="5" />
+    <!-- flow tolerance for outlier removal (in pixels) -->
+    <param name="outlier_flow_tolerance" type="int" value="5" />
+    <!-- multi stage: 0=disabled, 1=multistage matching (denser and faster) -->
+    <param name="multi_stage" type="int" value="1" />
+    <!-- half resolution: 0=disabled, 1=match at half resolution, refine at full resolution -->
+    <param name="half_resolution" type="int" value="1" />
+    <!-- refinement: 0=none, 1=pixel, 2=subpixel -->
+    <param name="refinement" type="int" value="1" />
+
+    <!-- MONO ODOMETER SPECIFIC -->
+    <!-- Height of the camera above the ground in meters -->
+    <param name="camera_height" type="double" value="$(arg camera_height)" />
+    <!-- Pitch of the camera in radiants, negative pitch means looking downwards -->
+    <param name="camera_pitch" type="double" value="$(arg camera_pitch)" />
+    <!-- Number of RANSAC iterations -->
+    <param name="ransac_iters" type="int" value="2000" />
+    <!-- Fundamental matrix inlier threshold -->
+    <param name="inlier_threshold" type="double" value="0.00001" />
+    <!-- Threshold for stable fundamental matrix estimation -->
+    <param name="motion_threshold" type="double" value="100.0" />
+
+</node>
+
+
+</launch>

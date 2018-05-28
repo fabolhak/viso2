@@ -1,0 +1,89 @@
+<launch>
+
+<!-- base and image name of the topic:
+     <base>/left/<image>
+     <base>/rigt/<image>
+-->
+<arg name="topic_name_base" default="/"/>
+<arg name="topic_name_image" default="image_rect_color"/>
+
+<!-- name of the world-fixed frame where the odometer lives -->
+<arg name="odom_frame_id" default="odom" />
+
+<!-- name of the moving frame whose pose the odometer should report -->
+<arg name="base_link_frame_id" default="base_link" />
+
+<!-- if true, the odometer publishes tf's -->
+<arg name="publish_tf" default="true" />
+
+<!-- were to output messages [log|screen] -->
+<arg name="output" default="screen" />
+
+
+<!-- stereo odometer -->
+<node pkg="viso2_ros" type="stereo_odometer" name="stereo_odometer" output="$(arg output)">
+    <!-- ROS PARAMETER (description above) -->
+    <remap from="stereo" to="$(arg topic_name_base)"/>
+    <remap from="image"  to="$(arg topic_name_image)"/>
+    <param name="odom_frame_id"      type="str"  value="$(arg odom_frame_id)" />
+    <param name="base_link_frame_id" type="str"  value="$(arg base_link_frame_id)" />
+    <param name="publish_tf"         type="bool" value="$(arg publish_tf)" />
+
+    <!-- BUCKETING PARAMTERS -->
+    <!-- maximum number of features per bucket -->
+    <param name="max_features" type="int"  value="2" />
+    <!-- width of the bucket -->
+    <param name="bucket_width" type="double"  value="50.0" />
+    <!-- height of the bucket -->
+    <param name="bucket_height" type="double"  value="50.0" />
+
+    <!-- MATCHER PARAMETERS -->
+    <!-- minimum distance between maxima in pixels for non-maxima-suppression -->
+    <param name="nms_n" type="int" value="3" />
+    <!-- interest point peakiness threshold -->
+    <param name="nms_tau" type="int" value="50" />
+    <!-- matching width/height (affects efficiency only) -->
+    <param name="match_binsize" type="int" value="50" />
+    <!-- matching radius (du/dv in pixels) -->
+    <param name="match_radius" type="int" value="200" />
+    <!-- dv tolerance for stereo matches (in pixels) -->
+    <param name="match_disp_tolerance" type="int" value="2" />
+    <!-- disparity tolerance for outlier removal (in pixels) -->
+    <param name="outlier_disp_tolerance" type="int" value="5" />
+    <!-- flow tolerance for outlier removal (in pixels) -->
+    <param name="outlier_flow_tolerance" type="int" value="5" />
+    <!-- multi stage: 0=disabled, 1=multistage matching (denser and faster) -->
+    <param name="multi_stage" type="int" value="1" />
+    <!-- half resolution: 0=disabled, 1=match at half resolution, refine at full resolution -->
+    <param name="half_resolution" type="int" value="1" />
+    <!-- refinement: 0=none, 1=pixel, 2=subpixel -->
+    <param name="refinement" type="int" value="1" />
+
+    <!-- STEREO ODOMETER SPECIFIC -->
+    <!-- length of the input queues for left and right camera synchronization -->
+    <param name="queue_size" type="int" value="5" />
+    <!-- approximate synchronization of incoming messages, set to true if cameras do
+         not have synchronized timestamps -->
+    <param name="approximate_sync" type="bool" value="false" />
+    <!-- Number of RANSAC iterations -->
+    <param name="ransac_iters" type="int" value="200" />
+    <!-- Fundamental matrix inlier threshold -->
+    <param name="inlier_threshold" type="double" value="1.5" />
+    <!-- Lower border weights (more robust to calibration errors) -->
+    <param name="reweighting" type="bool" value="true" />
+    <!-- Defines the method of reference frame change for drift compensation.
+         * 0 means reference frame is changed for every algorithm iteration.
+         * 1 changes the reference frame if last motion is small (ref_frame_motion_threshold param).
+         * 2 changes the reference frame if the number of inliers is smaller than ref_frame_inlier_threshold param. -->
+    <param name="ref_frame_change_method" type="int" value="0" />
+    <!-- If the mean movement in pixels of all features lies below this threshold,
+         the reference image inside the odometer will not be changed -->
+    <param name="ref_frame_motion_threshold" type="double" value="0.5" />
+    <!-- If the number of inliers between current frame and reference frame is smaller than this threshold,
+         the reference image inside the odometer will be changed. -->
+    <param name="ref_frame_inlier_threshold" type="int" value="150" />
+
+</node>
+
+
+</launch>
