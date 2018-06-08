@@ -21,7 +21,7 @@
 
 
 <!-- stereo odometer -->
-<node pkg="viso2_ros" type="stereo_odometer" name="stereo_odometer" output="$(arg output)">
+<node pkg="viso2_ros" type="mono_odometer" name="mono_odometer" output="$(arg output)">
     <!-- ROS PARAMETER (description above) -->
     <remap from="image"  to="$(arg topic_name)"/>
     <param name="odom_frame_id"      type="str"  value="$(arg odom_frame_id)" />
